@@ -1,0 +1,10 @@
+docker-compose up -d
+npm i @nestjs/typeorm
+typeorm pg bcrypt
+class-transformer 
+class-validator
+npm i @types/bcrypt -D
+
+
+
+
