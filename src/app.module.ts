@@ -6,7 +6,12 @@ import { AuthModule } from './auth/auth.module';
 import { GamesModule } from './games/games.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig), UsersModule, AuthModule, GamesModule],
+  imports: [
+    TypeOrmModule.forRoot(typeOrmConfig),
+    UsersModule,
+    AuthModule,
+    GamesModule,
+  ],
   controllers: [],
   providers: [],
 })

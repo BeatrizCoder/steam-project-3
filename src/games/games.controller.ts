@@ -11,49 +11,46 @@ import {
     Delete,
     Query,
   } from '@nestjs/common';
-  import { CreateUserDto } from './dtos/create-user.dto';
-  import { UsersService } from './users.service';
-  import { ReturnUserDto } from './dtos/return-user.dto';
+  import { CreateUserDto } from './dtos/create-game.dto';
+  import { GamesService } from './games.service';
+  import { ReturnGameDto } from './dtos/return-game.dto';
   import { AuthGuard } from '@nestjs/passport';
-  import { RolesGuard } from 'src/auth/roles.guard';
-  import { Role } from '../auth/role.decorator';
-  import { UserRole } from './user-roles.enum';
-  import { UpdateUserDto } from './dtos/update-users.dto';
-  import { User } from './user.entity';
-  import { GetUser } from 'src/auth/get-user.decorator';
-  import { FindUsersQueryDto } from './dtos/find-users-query.dto';
+  import { UpdateGameDto } from './dtos/update-games.dto';
+  import { Game } from './game.entity';
+  import { GetGame } from 'src/auth/get-game.decorator';
+  import { FindGamesQueryDto } from './dtos/find-games-query.dto';
   
   @Controller('users')
-  @UseGuards(AuthGuard(), RolesGuard)
-  export class UsersController {
-    constructor(private usersService: UsersService) {}
+  @GamesGuards(AuthGuard(), RolesGuard)
+  export class GamesController {
+    constructor(private gamesService: GamesService) {}
   
     @Post()
     if (user.role != UserRole.ADMIN && user.id.toString() != id) {
     async createAdminUser(
-      @Body(ValidationPipe) createUserDto: CreateUserDto,
+      @Body(ValidationPipe) createGameDto: CreateGameDto,
     ): Promise<ReturnUserDto> {
-      const user = await this.usersService.createAdminUser(createUserDto);
+      const game = await this.gamesService.createAdminUser(createUserDto);
       return {
-        user,
-        message: 'admin successfully registered',
+        game,
+        message: 'game successfully registered',
       };
     }
   
     @Get(':id')
     @Role(UserRole.ADMIN)
     async findUserById(@Param('id') id: string): Promise<ReturnUserDto> {
-      const user = await this.usersService.findUserById(id);
+      const user = await this.gamesService.findUserById(id);
       return {
         user,
-        message: 'User found',
+        message: 'Game found',
       };
     }
   
     @Patch(':id')
     async updateUser(
-      @Body(ValidationPipe) updateUserDto: UpdateUserDto,
-      @GetUser() user: User,
+      @Body(ValidationPipe) updateGameDto: UpdateGameDto,
+      @GetUser() user: Game,
       @Param('id') id: string,
     ) {
       if (user.role != UserRole.ADMIN && user.id.toString() != id) {
@@ -70,7 +67,7 @@ import {
     async deleteUser(@Param('id') id: string) {
       await this.usersService.deleteUser(id);
       return {
-        message: 'User removed successfully',
+        message: 'Game removed successfully',
       };
     }
   

@@ -1,18 +1,58 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { GamesController } from './games.controller';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import AuthUser from 'src/common/decorators/auth-user.decorator';
+import { CreateGamesDto } from 'src/auth/games/dto/create-games.dto';
+import { GamesService } from './games.service';
+import { Games } from './game.entity';
 
-describe('GamesController', () => {
-  let controller: GamesController;
+@UseGuards(AuthGuard('jwt'))
+@Controller('games')
+export class GamesController {
+  constructor(private service: GamesService) {}
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [GamesController],
-    }).compile();
+  @Get()
+  @UsePipes(ValidationPipe)
+  find() {
+    return this.service.find();
+  }
 
-    controller = module.get<GamesController>(GamesController);
-  });
+  @Get(':id')
+  @UsePipes(ValidationPipe)
+  findOne(@AuthUser()@Param('id') id: number): Promise<Games> {
+    return this.service.findOneGame(id);
+  }
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+  @Post('/create')
+  @UsePipes(ValidationPipe)
+  post(@AuthUser()@Body() data: CreateGamesDto): Promise<JGames> {
+    return this.service.postGame( data );
+  }
+
+  @Delete('delete/:id')
+  @UsePipes(ValidationPipe)
+  delete(@AuthUser()@Param('id') id: number): Promise<Games[]> {
+    return this.service.delete(id);
+  }
+
+  @Put('/update/:id')
+  @UsePipes(ValidationPipe)
+  async update(
+    @AuthUser()
+    @Body() updateGame: CreateGamesDto,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Games>{
+    return this.service.update(id,updateGame);
+  }
+}
